@@ -51,8 +51,8 @@ class GUISet():
             self.segInfo[i].place(x = segCent[0]-150, y = segCent[1] + 12, anchor = "center")
 
             self.chamLabs[i][0].place(x = segCent[0], y = segCent[1] - 70, anchor = "center")
-            self.chamLabs[i][1].place(x = segCent[0] + 72, y = segCent[1] + 40, anchor = "center")
-            self.chamLabs[i][2].place(x = segCent[0] - 72, y = segCent[1] + 40, anchor = "center")
+            self.chamLabs[i][1].place(x = segCent[0] + 80, y = segCent[1] + 40, anchor = "center")
+            self.chamLabs[i][2].place(x = segCent[0] - 80, y = segCent[1] + 40, anchor = "center")
 
     def labelTabsGeneric(self, tabTLs):
         starter = 1
@@ -162,14 +162,24 @@ class GUISet():
         ).place(x = start[0], y = start[1] + 30, anchor = "center")
 
         tk.Button(
-            text="UP",
+            text="S UP",
             command = lambda:board.send(self.seg["setP"] + [1])
         ).place(x = 60, y = (y/2)-15, anchor = "center")
 
         tk.Button(
-            text="DOWN",
+            text="S DN",
             command = lambda:board.send(self.seg["setP"] + [2])
         ).place(x = 60, y = (y/2)+15, anchor = "center")
+
+        tk.Button(
+            text="L UP",
+            command = lambda:board.send(self.seg["setP"] + [3])
+        ).place(x = 60, y = (y/2)-45, anchor = "center")
+
+        tk.Button(
+            text="L DN",
+            command = lambda:board.send(self.seg["setP"] + [4])
+        ).place(x = 60, y = (y/2)+45, anchor = "center")
 
     def copy(self, seg):
         match seg:
@@ -196,7 +206,7 @@ class GUISet():
                 replace(self.tabNPs[2][1], input)
                 replace(self.tabNPs[2][2], input)
             case 5:
-                input = "10"
+                input = "-1"
                 replace(self.tabNPs[0][0], input)
                 replace(self.tabNPs[0][1], input)
                 replace(self.tabNPs[0][2], input)
@@ -213,7 +223,7 @@ class GUISet():
         
         while True:
             try:
-                self.seg = board.get()
+                self.seg = board.get(self.seg)
 
                 for i in range(3):
                     # Valve States
@@ -222,7 +232,7 @@ class GUISet():
                     # Chamber & table labels
                     for j in range(3):
                         k = 3*i + j
-                        self.chamLabs[i][j].config(text = str(int(self.seg["chamPress"][k])) + " kPa \n" + status[self.seg["status"][k]])
+                        self.chamLabs[i][j].config(text = str(round(self.seg["chamPress"][k], 1)) + " kPa \n" + status[self.seg["status"][k]])
 
                         if self.seg["setP"][k] < 0:
                             self.tabSPs[i][j].config(text = "LOCK")
@@ -231,7 +241,8 @@ class GUISet():
                         
                 self.brdTime.config(text = str(round(self.seg["boardTime"] / 1000, 1)) + " s")
             
-            except:
+            except Exception as e:
+                # print(e)
                 print("Data out of date " + str(round(time.time() - start, 1)))
 
     def pushPress(self):
@@ -262,8 +273,8 @@ class GUISet():
         # Background
         tk.Label(self.window, image = self.rig).place(x = 0,y = 0)
 
-        tabTLs = [[749, 277], [749, 444], [749, 110]]
-        segCents = [[587, 300], [587, 464], [587, 136]]
+        tabTLs = [[749, 444], [749, 110], [749, 277]]
+        segCents = [[587, 470], [587, 136], [587, 303]]
 
         self.labelSegs(segCents)
         self.labelTabsGeneric(tabTLs)
@@ -275,6 +286,7 @@ class GUISet():
         self.brdTime = tk.Label()
         self.brdTime.place(x = 587, y = 600, anchor='center')
 
+        self.seg = board.get(0)
 
 def replace(object, input):
     object.delete(0, tk.END)
