@@ -1,5 +1,4 @@
 import threading
-
 import interface
 
 #Set frame dimensions

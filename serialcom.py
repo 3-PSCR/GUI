@@ -3,7 +3,7 @@ import json
 import time
 
 start = time.time()
-port = 'usbmodem101' # 'usbserial-110' 
+port = 'usbmodem101'
 
 class Board():
 
